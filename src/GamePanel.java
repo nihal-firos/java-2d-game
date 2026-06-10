@@ -5,12 +5,19 @@ import java.awt.event.KeyListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.Timer;
+import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements KeyListener {
+
+    ArrayList<Platform> platforms = new ArrayList<>();
 
     public GamePanel() {
         setFocusable(true);
         addKeyListener(this);
+
+        platforms.add(new Platform(250, 350, 200, 20));
+        platforms.add(new Platform(500, 250, 150, 20));
+        platforms.add(new Platform(100, 180, 120, 20));
 
         Timer timer = new Timer(16, new ActionListener() {
 
@@ -28,7 +35,12 @@ public class GamePanel extends JPanel implements KeyListener {
 
     int playerX = 100;
     int playerY = 100;
+    int groundY = 500;
 
+    double velocityY = 0;
+    double gravity = 0.5;
+
+    boolean onGround = false;
     boolean leftPressed;
     boolean rightPressed;
     boolean upPressed;
@@ -38,7 +50,19 @@ public class GamePanel extends JPanel implements KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        g.fillRect(playerX, playerY, 80, 80);
+        g.fillRect(playerX, playerY, 50, 50);
+
+        g.fillRect(0, groundY, 800, 100);
+
+        for (Platform platform : platforms) {
+
+            g.fillRect(
+                    platform.x,
+                    platform.y,
+                    platform.width,
+                    platform.height);
+
+        }
     }
 
     @Override
@@ -60,6 +84,13 @@ public class GamePanel extends JPanel implements KeyListener {
 
         if (key == KeyEvent.VK_DOWN) {
             downPressed = true;
+        }
+
+        if (key == KeyEvent.VK_SPACE && onGround) {
+
+            velocityY = -14;
+
+            onGround = false;
         }
 
         repaint();
@@ -94,20 +125,43 @@ public class GamePanel extends JPanel implements KeyListener {
 
     public void updateGame() {
 
+        onGround = false;
+
         if (leftPressed) {
-            playerX -= 8;
+            playerX -= 5;
         }
 
         if (rightPressed) {
-            playerX += 8;
+            playerX += 5;
         }
 
-        if (upPressed) {
-            playerY -= 8;
+        velocityY += gravity;
+
+        playerY += (int) velocityY;
+
+        if (playerY + 50 >= groundY) {
+
+            playerY = groundY - 50;
+
+            velocityY = 0;
+
+            onGround = true;
         }
 
-        if (downPressed) {
-            playerY += 8;
+        for (Platform platform : platforms) {
+
+            if (playerX + 50 > platform.x &&
+                    playerX < platform.x + platform.width &&
+                    playerY + 50 >= platform.y &&
+                    playerY + 50 <= platform.y + 20 &&
+                    velocityY > 0) {
+
+                playerY = platform.y - 50;
+
+                velocityY = 0;
+
+                onGround = true;
+            }
         }
 
         repaint();
