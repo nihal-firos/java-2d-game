@@ -18,6 +18,12 @@ public class GamePanel extends JPanel implements KeyListener {
         platforms.add(new Platform(250, 350, 200, 20));
         platforms.add(new Platform(500, 250, 150, 20));
         platforms.add(new Platform(100, 180, 120, 20));
+        platforms.add(new Platform(900, 350, 200, 20));
+        platforms.add(new Platform(1200, 250, 200, 20));
+        platforms.add(new Platform(1500, 300, 200, 20));
+        platforms.add(new Platform(1900, 200, 200, 20));
+        platforms.add(new Platform(2200, 450, 200, 20));
+        platforms.add(new Platform(2500, 390, 200, 20));
 
         Timer timer = new Timer(16, new ActionListener() {
 
@@ -37,6 +43,9 @@ public class GamePanel extends JPanel implements KeyListener {
     int playerY = 100;
     int groundY = 500;
 
+    // Camera
+    int cameraX = 0;
+
     double velocityY = 0;
     double gravity = 0.5;
 
@@ -50,14 +59,14 @@ public class GamePanel extends JPanel implements KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        g.fillRect(playerX, playerY, 50, 50);
+        g.fillRect(playerX - cameraX, playerY, 50, 50);
 
         g.fillRect(0, groundY, 800, 100);
 
         for (Platform platform : platforms) {
 
             g.fillRect(
-                    platform.x,
+                    platform.x - cameraX,
                     platform.y,
                     platform.width,
                     platform.height);
@@ -165,5 +174,7 @@ public class GamePanel extends JPanel implements KeyListener {
         }
 
         repaint();
+
+        cameraX = playerX - 400;
     }
 }
