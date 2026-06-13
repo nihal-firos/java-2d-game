@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.Timer;
 import java.util.ArrayList;
+import javax.swing.JButton;
 
 public class GamePanel extends JPanel implements KeyListener {
 
@@ -13,10 +14,13 @@ public class GamePanel extends JPanel implements KeyListener {
     ArrayList<Enemy> enemies = new ArrayList<>();  // Enemy Array
     ArrayList<Coin> coins = new ArrayList<>();  // Coins Array
 
+    JButton resetButton;
+
     public GamePanel() {
         setFocusable(true);
         addKeyListener(this);
 
+        setLayout(null);
 
         // Platforms
         platforms.add(new Platform(250, 350, 200, 20));
@@ -41,6 +45,15 @@ public class GamePanel extends JPanel implements KeyListener {
         coins.add(new Coin(1000, 200));
         coins.add(new Coin(1400, 250));
         coins.add(new Coin(1800, 200));
+
+        // Restart Button
+        resetButton = new JButton("Play Again");
+
+        resetButton.setBounds(320, 200, 150, 40);
+
+        resetButton.setVisible(false);
+
+        add(resetButton);
 
         Timer timer = new Timer(16, new ActionListener() {
 
@@ -85,6 +98,12 @@ public class GamePanel extends JPanel implements KeyListener {
     double velocityY = 0;
     double gravity = 0.5;
 
+    // Goal Flag
+    int goalX = 2200;
+    int goalY = 300;
+
+    boolean gameWon = false;
+
     boolean onGround = false;
     boolean leftPressed;
     boolean rightPressed;
@@ -95,11 +114,17 @@ public class GamePanel extends JPanel implements KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        if (gameWon) {
+            g.drawString("YOU WIN!", 350, 100);
+        }
+
         g.fillRect(playerX - cameraX, playerY, 50, 50);
 
         g.fillRect(0, groundY, 800, 100);
 
         g.drawString("Score: " + score, 20, 20); // Scoreboard
+
+        g.drawRect(goalX - cameraX, goalY, 30, 80); // Goal Flag
 
         // Platform Painting
         for (Platform platform : platforms) {
@@ -136,6 +161,11 @@ public class GamePanel extends JPanel implements KeyListener {
 
             }
         }
+
+        // Reset Button
+        resetButton.addActionListener(e -> {
+            resetGame();
+        });
     }
 
     @Override
@@ -197,6 +227,11 @@ public class GamePanel extends JPanel implements KeyListener {
     }
 
     public void updateGame() {
+
+        if (gameWon) {
+            repaint();
+            return;
+        }
 
         onGround = false;
 
@@ -268,8 +303,38 @@ public class GamePanel extends JPanel implements KeyListener {
             }
         }
 
+        // Win Condition
+        if (playerX < goalX + 30 &&
+                playerX + 50 > goalX &&
+                playerY < goalY + 80 &&
+                playerY + 50 > goalY) {
+            gameWon = true;
+            resetButton.setVisible(true);
+        }
+
         repaint();
 
         cameraX = playerX - 400;
     }
+
+    public void resetGame() {
+
+        playerX = 100;
+        playerY = 100;
+
+        velocityY = 0;
+
+        score = 0;
+
+        gameWon = false;
+
+        cameraX = 0;
+
+        for (Coin coin : coins) {
+            coin.collected = false;
+        }
+
+        resetButton.setVisible(false);
+    }
+
 }
