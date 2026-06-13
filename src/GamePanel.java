@@ -53,6 +53,22 @@ public class GamePanel extends JPanel implements KeyListener {
         });
 
         timer.start();
+
+    }
+
+    // Respawn Mechanism
+    public void respawn() {
+
+        playerX = 100;
+        playerY = 100;
+
+        velocityY = 0;
+
+        score = 0;
+
+        for (Coin coin : coins) {
+            coin.collected = false;
+        }
     }
 
 
@@ -232,11 +248,7 @@ public class GamePanel extends JPanel implements KeyListener {
                     playerX + 50 > enemy.x &&
                     playerY < enemy.y + enemy.height &&
                     playerY + 50 > enemy.y) {
-
-                playerX = 100;
-                playerY = 100;
-
-                velocityY = 0;
+                        respawn();
             }
         }
 
