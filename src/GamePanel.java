@@ -9,7 +9,8 @@ import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements KeyListener {
 
-    ArrayList<Platform> platforms = new ArrayList<>();
+    ArrayList<Platform> platforms = new ArrayList<>();   // Platform Array
+    ArrayList<Enemy> enemies = new ArrayList<>();  // Enemy Array
 
     public GamePanel() {
         setFocusable(true);
@@ -24,6 +25,11 @@ public class GamePanel extends JPanel implements KeyListener {
         platforms.add(new Platform(1900, 200, 200, 20));
         platforms.add(new Platform(2200, 450, 200, 20));
         platforms.add(new Platform(2500, 390, 200, 20));
+
+        enemies.add(new Enemy(300, 310, 250, 450));
+        enemies.add(new Enemy(300, 310, 250, 450));
+        enemies.add(new Enemy(900, 310, 850, 1100));
+        enemies.add(new Enemy(1500, 260, 1450, 1650));
 
         Timer timer = new Timer(16, new ActionListener() {
 
@@ -63,6 +69,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         g.fillRect(0, groundY, 800, 100);
 
+        // Platform Painting
         for (Platform platform : platforms) {
 
             g.fillRect(
@@ -70,6 +77,17 @@ public class GamePanel extends JPanel implements KeyListener {
                     platform.y,
                     platform.width,
                     platform.height);
+
+        }
+
+        // Enemy Painting
+        for (Enemy enemy : enemies) {
+
+            g.fillRect(
+                    enemy.x - cameraX,
+                    enemy.y,
+                    enemy.width,
+                    enemy.height);
 
         }
     }
@@ -170,6 +188,25 @@ public class GamePanel extends JPanel implements KeyListener {
                 velocityY = 0;
 
                 onGround = true;
+            }
+        }
+
+        for (Enemy enemy : enemies) {
+            enemy.update();
+        }
+
+        // Enemy Collision Detection
+        for (Enemy enemy : enemies) {
+
+            if (playerX < enemy.x + enemy.width &&
+                    playerX + 50 > enemy.x &&
+                    playerY < enemy.y + enemy.height &&
+                    playerY + 50 > enemy.y) {
+
+                playerX = 100;
+                playerY = 100;
+
+                velocityY = 0;
             }
         }
 
