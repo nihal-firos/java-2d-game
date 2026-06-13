@@ -11,11 +11,14 @@ public class GamePanel extends JPanel implements KeyListener {
 
     ArrayList<Platform> platforms = new ArrayList<>();   // Platform Array
     ArrayList<Enemy> enemies = new ArrayList<>();  // Enemy Array
+    ArrayList<Coin> coins = new ArrayList<>();  // Coins Array
 
     public GamePanel() {
         setFocusable(true);
         addKeyListener(this);
 
+
+        // Platforms
         platforms.add(new Platform(250, 350, 200, 20));
         platforms.add(new Platform(500, 250, 150, 20));
         platforms.add(new Platform(100, 180, 120, 20));
@@ -26,10 +29,18 @@ public class GamePanel extends JPanel implements KeyListener {
         platforms.add(new Platform(2200, 450, 200, 20));
         platforms.add(new Platform(2500, 390, 200, 20));
 
+        // Enemies
         enemies.add(new Enemy(300, 310, 250, 450));
         enemies.add(new Enemy(300, 310, 250, 450));
         enemies.add(new Enemy(900, 310, 850, 1100));
         enemies.add(new Enemy(1500, 260, 1450, 1650));
+
+        // Coins
+        coins.add(new Coin(300, 300));
+        coins.add(new Coin(600, 200));
+        coins.add(new Coin(1000, 200));
+        coins.add(new Coin(1400, 250));
+        coins.add(new Coin(1800, 200));
 
         Timer timer = new Timer(16, new ActionListener() {
 
@@ -48,6 +59,9 @@ public class GamePanel extends JPanel implements KeyListener {
     int playerX = 100;
     int playerY = 100;
     int groundY = 500;
+
+    // Score Counter
+    int score = 0;
 
     // Camera
     int cameraX = 0;
@@ -69,6 +83,8 @@ public class GamePanel extends JPanel implements KeyListener {
 
         g.fillRect(0, groundY, 800, 100);
 
+        g.drawString("Score: " + score, 20, 20); // Scoreboard
+
         // Platform Painting
         for (Platform platform : platforms) {
 
@@ -89,6 +105,20 @@ public class GamePanel extends JPanel implements KeyListener {
                     enemy.width,
                     enemy.height);
 
+        }
+
+        // Coin Painting
+        for (Coin coin : coins) {
+
+            if (!coin.collected) {
+
+                g.fillOval(
+                        coin.x - cameraX,
+                        coin.y,
+                        20,
+                        20);
+
+            }
         }
     }
 
@@ -207,6 +237,22 @@ public class GamePanel extends JPanel implements KeyListener {
                 playerY = 100;
 
                 velocityY = 0;
+            }
+        }
+
+
+        // Coin Collections Mechanism
+        for (Coin coin : coins) {
+
+            if (!coin.collected &&
+                    playerX < coin.x + 20 &&
+                    playerX + 50 > coin.x &&
+                    playerY < coin.y + 20 &&
+                    playerY + 50 > coin.y) {
+
+                coin.collected = true;
+
+                score++;
             }
         }
 
