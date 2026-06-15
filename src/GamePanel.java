@@ -7,6 +7,9 @@ import java.awt.event.ActionListener;
 import javax.swing.Timer;
 import java.util.ArrayList;
 import javax.swing.JButton;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.File;
 
 public class GamePanel extends JPanel implements KeyListener {
 
@@ -53,20 +56,104 @@ public class GamePanel extends JPanel implements KeyListener {
 
         resetButton.setVisible(false);
 
+        // Reset Button
+        resetButton.addActionListener(e -> {
+            resetGame();
+        });
+
         add(resetButton);
+
+        // Sprite Loader
+        try {
+
+            // IDLE
+            idleSheet = ImageIO.read(
+                    new File(
+                            "assets/Main Characters/Mask Dude/Idle (32x32).png"));
+
+            int frameCount = idleSheet.getWidth() / 32;
+
+            idleFrames = new BufferedImage[frameCount];
+
+            for (int i = 0; i < frameCount; i++) {
+
+                idleFrames[i] = idleSheet.getSubimage(
+                        i * 32,
+                        0,
+                        32,
+                        32);
+            }
+
+            // RUN
+            runSheet = ImageIO.read(
+                    new File(
+                            "assets/Main Characters/Mask Dude/Run (32x32).png"));
+
+            int runFrameCount = runSheet.getWidth() / 32;
+
+            runFrames = new BufferedImage[runFrameCount];
+
+            for (int j = 0; j < runFrameCount; j++) {
+
+                runFrames[j] = runSheet.getSubimage(
+                        j * 32,
+                        0,
+                        32,
+                        32);
+            }
+            
+            // Jump Sheet
+            jumpSheet = ImageIO.read(
+                    new File(
+                            "assets/Main Characters/Mask Dude/Jump (32x32).png"));
+
+            int jumpFrameCount = jumpSheet.getWidth() / 32;
+
+            jumpFrames = new BufferedImage[jumpFrameCount];
+
+            for (int i = 0; i < jumpFrameCount; i++) {
+
+                jumpFrames[i] = jumpSheet.getSubimage(
+                        i * 32,
+                        0,
+                        32,
+                        32);
+            }
+
+            // Fall Sheet
+            fallSheet = ImageIO.read(
+                    new File(
+                            "assets/Main Characters/Mask Dude/Fall (32x32).png"));
+
+            int fallFrameCount = fallSheet.getWidth() / 32;
+
+            fallFrames = new BufferedImage[fallFrameCount];
+
+            for (int i = 0; i < fallFrameCount; i++) {
+
+                fallFrames[i] = fallSheet.getSubimage(
+                        i * 32,
+                        0,
+                        32,
+                        32);
+            }
+
+            System.out.println("Jump Frames: " + jumpFrames.length);
+            System.out.println("Fall Frames: " + fallFrames.length);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Timer timer = new Timer(16, new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 updateGame();
-
             }
         });
 
         timer.start();
-
     }
 
     // Respawn Mechanism
@@ -104,6 +191,24 @@ public class GamePanel extends JPanel implements KeyListener {
 
     boolean gameWon = false;
 
+    // Sprite Image
+    BufferedImage idleSheet;
+    BufferedImage[] idleFrames;
+    int currentFrame = 0;
+    int animationCounter = 0;
+
+    BufferedImage runSheet;
+    BufferedImage[] runFrames;
+
+    boolean facingRight = true;
+
+    BufferedImage jumpSheet;
+    BufferedImage fallSheet;
+
+    BufferedImage[] jumpFrames;
+    BufferedImage[] fallFrames;
+
+
     boolean onGround = false;
     boolean leftPressed;
     boolean rightPressed;
@@ -118,7 +223,51 @@ public class GamePanel extends JPanel implements KeyListener {
             g.drawString("YOU WIN!", 350, 100);
         }
 
-        g.fillRect(playerX - cameraX, playerY, 50, 50);
+        if (idleFrames != null) {
+
+            BufferedImage currentSprite;
+
+            if (!onGround) {
+
+                if (velocityY < 0) {
+
+                    currentSprite = jumpFrames[0];
+
+                } else {
+
+                    currentSprite = fallFrames[0];
+                }
+
+            } else if (leftPressed || rightPressed) {
+
+                currentSprite = runFrames[currentFrame % runFrames.length];
+
+            } else {
+
+                currentSprite = idleFrames[currentFrame % idleFrames.length];
+            }
+
+            if (facingRight) {
+
+                g.drawImage(
+                        currentSprite,
+                        playerX - cameraX,
+                        playerY,
+                        64,
+                        64,
+                        null);
+
+            } else {
+
+                g.drawImage(
+                        currentSprite,
+                        playerX - cameraX + 64,
+                        playerY,
+                        -64,
+                        64,
+                        null);
+            }
+        }
 
         g.fillRect(0, groundY, 800, 100);
 
@@ -161,11 +310,6 @@ public class GamePanel extends JPanel implements KeyListener {
 
             }
         }
-
-        // Reset Button
-        resetButton.addActionListener(e -> {
-            resetGame();
-        });
     }
 
     @Override
@@ -313,6 +457,28 @@ public class GamePanel extends JPanel implements KeyListener {
         }
 
         repaint();
+
+        animationCounter++;
+
+        if (animationCounter > 10) {
+
+            currentFrame++;
+
+            if (currentFrame > 1000) {
+                currentFrame = 0;
+            }
+
+            animationCounter = 0;
+        }
+
+        // Sprite Direction
+        if (leftPressed) {
+            facingRight = false;
+        }
+
+        if (rightPressed) {
+            facingRight = true;
+        }
 
         cameraX = playerX - 400;
     }
