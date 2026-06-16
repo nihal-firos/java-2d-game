@@ -138,8 +138,26 @@ public class GamePanel extends JPanel implements KeyListener {
                         32);
             }
 
-            System.out.println("Jump Frames: " + jumpFrames.length);
-            System.out.println("Fall Frames: " + fallFrames.length);
+            // Enemy Sprite Loader
+            enemyWalkSheet = ImageIO.read(
+                    new File(
+                            "assets/Enemies/AngryPig/Walk (36x30).png"));
+
+            int enemyFrameCount = enemyWalkSheet.getWidth() / 36;
+
+            enemyWalkFrames = new BufferedImage[enemyFrameCount];
+
+            for (int i = 0; i < enemyFrameCount; i++) {
+
+                enemyWalkFrames[i] = enemyWalkSheet.getSubimage(
+                        i * 36,
+                        0,
+                        36,
+                        30);
+            }
+
+            System.out.println(
+                    "Enemy Frames: " + enemyWalkFrames.length);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -207,6 +225,13 @@ public class GamePanel extends JPanel implements KeyListener {
 
     BufferedImage[] jumpFrames;
     BufferedImage[] fallFrames;
+
+    // Enemy Sprites
+    BufferedImage enemyWalkSheet;
+    BufferedImage[] enemyWalkFrames;
+
+    int enemyFrame = 0;
+    int enemyAnimationCounter = 0;
 
 
     boolean onGround = false;
@@ -289,12 +314,26 @@ public class GamePanel extends JPanel implements KeyListener {
         // Enemy Painting
         for (Enemy enemy : enemies) {
 
-            g.fillRect(
-                    enemy.x - cameraX,
-                    enemy.y,
-                    enemy.width,
-                    enemy.height);
+            if (enemy.facingRight) {
 
+                g.drawImage(
+                        enemyWalkFrames[enemyFrame],
+                        enemy.x - cameraX + 72,
+                        enemy.y,
+                        -72,
+                        60,
+                        null);
+
+            } else {
+
+                g.drawImage(
+                        enemyWalkFrames[enemyFrame],
+                        enemy.x - cameraX,
+                        enemy.y,
+                        72,
+                        60,
+                        null);
+            }
         }
 
         // Coin Painting
@@ -478,6 +517,20 @@ public class GamePanel extends JPanel implements KeyListener {
 
         if (rightPressed) {
             facingRight = true;
+        }
+
+        // Enemy Animation
+        enemyAnimationCounter++;
+
+        if (enemyAnimationCounter > 10) {
+
+            enemyFrame++;
+
+            if (enemyFrame >= enemyWalkFrames.length) {
+                enemyFrame = 0;
+            }
+
+            enemyAnimationCounter = 0;
         }
 
         cameraX = playerX - 400;

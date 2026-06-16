@@ -11,6 +11,8 @@ public class Enemy {
     int leftLimit;
     int rightLimit;
 
+    boolean facingRight = true;
+
     public Enemy(int x, int y, int leftLimit, int rightLimit) {
 
         this.x = x;
@@ -23,6 +25,12 @@ public class Enemy {
     public void update() {
 
         x += speed;
+
+        if (speed > 0) {
+            facingRight = true;
+        } else {
+            facingRight = false;
+        }
 
         if (x <= leftLimit || x >= rightLimit) {
             speed *= -1;
