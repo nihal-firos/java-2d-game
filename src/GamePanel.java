@@ -26,15 +26,17 @@ public class GamePanel extends JPanel implements KeyListener {
         setLayout(null);
 
         // Platforms
-        platforms.add(new Platform(250, 350, 200, 20));
-        platforms.add(new Platform(500, 250, 150, 20));
-        platforms.add(new Platform(100, 180, 120, 20));
-        platforms.add(new Platform(900, 350, 200, 20));
-        platforms.add(new Platform(1200, 250, 200, 20));
-        platforms.add(new Platform(1500, 300, 200, 20));
-        platforms.add(new Platform(1900, 200, 200, 20));
-        platforms.add(new Platform(2200, 450, 200, 20));
-        platforms.add(new Platform(2500, 390, 200, 20));
+        final int TILE = 46;
+
+        platforms.add(new Platform(250, 350, TILE * 4, 20));
+        platforms.add(new Platform(500, 250, TILE * 3, 20));
+        platforms.add(new Platform(100, 180, TILE * 3, 20));
+        platforms.add(new Platform(900, 350, TILE * 4, 20));
+        platforms.add(new Platform(1200, 250, TILE * 4, 20));
+        platforms.add(new Platform(1500, 300, TILE * 4, 20));
+        platforms.add(new Platform(1900, 200, TILE * 4, 20));
+        platforms.add(new Platform(2200, 450, TILE * 4, 20));
+        platforms.add(new Platform(2500, 390, TILE * 4, 20));
 
         // Enemies
         enemies.add(new Enemy(300, 310, 250, 450));
@@ -156,8 +158,26 @@ public class GamePanel extends JPanel implements KeyListener {
                         30);
             }
 
+            // Terrain Loader
+            terrainSheet = ImageIO.read(
+                    new File(
+                            "assets/Terrain/Terrain (16x16).png"));
+                    grassTile = terrainSheet.getSubimage(
+                    90,
+                    0,
+                    54,
+                    64);
+            
+    
+                
+            backgroundImage = ImageIO.read(
+                    new File(
+                            "assets/Background/Blue.png"));
+            
             System.out.println(
-                    "Enemy Frames: " + enemyWalkFrames.length);
+                    backgroundImage.getWidth() +
+                            " x " +
+                            backgroundImage.getHeight());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -234,6 +254,12 @@ public class GamePanel extends JPanel implements KeyListener {
     int enemyAnimationCounter = 0;
 
 
+    // Terrain Sprites
+    BufferedImage terrainSheet;
+    BufferedImage grassTile;
+
+    BufferedImage backgroundImage;
+
     boolean onGround = false;
     boolean leftPressed;
     boolean rightPressed;
@@ -243,6 +269,20 @@ public class GamePanel extends JPanel implements KeyListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        for (int x = 0; x < getWidth(); x += 64) {
+
+            for (int y = 0; y < getHeight(); y += 64) {
+
+                g.drawImage(
+                        backgroundImage,
+                        x,
+                        y,
+                        64,
+                        64,
+                        null);
+            }
+        }
 
         if (gameWon) {
             g.drawString("YOU WIN!", 350, 100);
@@ -277,7 +317,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 g.drawImage(
                         currentSprite,
                         playerX - cameraX,
-                        playerY,
+                        playerY - 14,
                         64,
                         64,
                         null);
@@ -287,7 +327,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 g.drawImage(
                         currentSprite,
                         playerX - cameraX + 64,
-                        playerY,
+                        playerY - 14,
                         -64,
                         64,
                         null);
@@ -303,12 +343,20 @@ public class GamePanel extends JPanel implements KeyListener {
         // Platform Painting
         for (Platform platform : platforms) {
 
-            g.fillRect(
-                    platform.x - cameraX,
-                    platform.y,
-                    platform.width,
-                    platform.height);
+            final int TILE_SPACING = 46;
 
+                int tileCount = platform.width / TILE_SPACING;
+
+                for (int i = 0; i < tileCount; i++) {
+
+                    g.drawImage(
+                            grassTile,
+                            platform.x - cameraX + i * TILE_SPACING,
+                            platform.y,
+                            54,
+                            64,
+                            null);
+                }
         }
 
         // Enemy Painting
@@ -319,7 +367,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 g.drawImage(
                         enemyWalkFrames[enemyFrame],
                         enemy.x - cameraX + 72,
-                        enemy.y,
+                        enemy.y - 10,
                         -72,
                         60,
                         null);
@@ -329,7 +377,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 g.drawImage(
                         enemyWalkFrames[enemyFrame],
                         enemy.x - cameraX,
-                        enemy.y,
+                        enemy.y - 10,
                         72,
                         60,
                         null);
