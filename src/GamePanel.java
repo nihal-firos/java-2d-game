@@ -178,6 +178,27 @@ public class GamePanel extends JPanel implements KeyListener {
                     backgroundImage.getWidth() +
                             " x " +
                             backgroundImage.getHeight());
+            
+            // Apple Loader
+            appleSheet = ImageIO.read(
+                    new File(
+                            "assets/Items/Fruits/Apple.png"));
+
+            int appleFrameCount = appleSheet.getWidth() / 32;
+
+            appleFrames = new BufferedImage[appleFrameCount];
+
+            for (int i = 0; i < appleFrameCount; i++) {
+
+                appleFrames[i] = appleSheet.getSubimage(
+                        i * 32,
+                        0,
+                        32,
+                        32);
+            }
+
+            System.out.println(
+                    "Apple Frames: " + appleFrames.length);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -259,6 +280,13 @@ public class GamePanel extends JPanel implements KeyListener {
     BufferedImage grassTile;
 
     BufferedImage backgroundImage;
+
+    // Apple Sprite
+    BufferedImage appleSheet;
+    BufferedImage[] appleFrames;
+
+    int appleFrame = 0;
+    int appleAnimationCounter = 0;
 
     boolean onGround = false;
     boolean leftPressed;
@@ -389,11 +417,13 @@ public class GamePanel extends JPanel implements KeyListener {
 
             if (!coin.collected) {
 
-                g.fillOval(
+                g.drawImage(
+                        appleFrames[0],
                         coin.x - cameraX,
                         coin.y,
-                        20,
-                        20);
+                        32,
+                        32,
+                        null);
 
             }
         }
@@ -523,9 +553,9 @@ public class GamePanel extends JPanel implements KeyListener {
         for (Coin coin : coins) {
 
             if (!coin.collected &&
-                    playerX < coin.x + 20 &&
+                    playerX < coin.x + 32 &&
                     playerX + 50 > coin.x &&
-                    playerY < coin.y + 20 &&
+                    playerY < coin.y + 32 &&
                     playerY + 50 > coin.y) {
 
                 coin.collected = true;
@@ -579,6 +609,20 @@ public class GamePanel extends JPanel implements KeyListener {
             }
 
             enemyAnimationCounter = 0;
+        }
+
+        // Apple Animation
+        appleAnimationCounter++;
+
+        if (appleAnimationCounter > 10) {
+
+            appleFrame++;
+
+            if (appleFrame >= appleFrames.length) {
+                appleFrame = 0;
+            }
+
+            appleAnimationCounter = 0;
         }
 
         cameraX = playerX - 400;
