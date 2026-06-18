@@ -13,6 +13,8 @@ public class Enemy {
 
     boolean facingRight = true;
 
+    boolean alive = true;
+
     public Enemy(int x, int y, int leftLimit, int rightLimit) {
 
         this.x = x;

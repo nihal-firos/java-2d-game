@@ -40,7 +40,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         // Enemies
         enemies.add(new Enemy(300, 310, 250, 450));
-        enemies.add(new Enemy(300, 310, 250, 450));
+        // enemies.add(new Enemy(300, 310, 250, 450));
         enemies.add(new Enemy(900, 310, 850, 1100));
         enemies.add(new Enemy(1500, 260, 1450, 1650));
 
@@ -228,6 +228,10 @@ public class GamePanel extends JPanel implements KeyListener {
         for (Coin coin : coins) {
             coin.collected = false;
         }
+
+        for (Enemy enemy : enemies) {
+            enemy.alive = true;
+        }
     }
 
 
@@ -390,6 +394,10 @@ public class GamePanel extends JPanel implements KeyListener {
         // Enemy Painting
         for (Enemy enemy : enemies) {
 
+            if (!enemy.alive) {
+                continue;
+            }
+
             if (enemy.facingRight) {
 
                 g.drawImage(
@@ -534,17 +542,37 @@ public class GamePanel extends JPanel implements KeyListener {
         }
 
         for (Enemy enemy : enemies) {
-            enemy.update();
+
+            if (enemy.alive) {
+                enemy.update();
+            }
         }
 
         // Enemy Collision Detection
         for (Enemy enemy : enemies) {
 
+            if (!enemy.alive) {
+                continue;
+            }
+
             if (playerX < enemy.x + enemy.width &&
                     playerX + 50 > enemy.x &&
                     playerY < enemy.y + enemy.height &&
                     playerY + 50 > enemy.y) {
-                        respawn();
+
+                // Player landed on top
+                int playerBottom = playerY + 50;
+
+                if (velocityY > 0 &&
+                    playerBottom < enemy.y + 20) {
+
+                    enemy.alive = false;
+                    velocityY = -8;
+                    score++;
+
+                } else {
+                    respawn();
+                }
             }
         }
 
@@ -643,6 +671,10 @@ public class GamePanel extends JPanel implements KeyListener {
 
         for (Coin coin : coins) {
             coin.collected = false;
+        }
+
+        for (Enemy enemy : enemies) {
+            enemy.alive = true;
         }
 
         resetButton.setVisible(false);
