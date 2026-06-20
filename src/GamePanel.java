@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.File;
+import java.awt.Font;
 
 public class GamePanel extends JPanel implements KeyListener {
 
@@ -208,6 +209,24 @@ public class GamePanel extends JPanel implements KeyListener {
                     16,
                     16);
 
+            // Flag Loader
+            flagSheet = ImageIO.read(
+                    new File(
+                            "assets/Items/Checkpoints/Checkpoint/Checkpoint (Flag Idle)(64x64).png"));
+
+            int flagFrameCount = flagSheet.getWidth() / 64;
+
+            flagFrames = new BufferedImage[flagFrameCount];
+
+            for (int i = 0; i < flagFrameCount; i++) {
+
+                flagFrames[i] = flagSheet.getSubimage(
+                        i * 64,
+                        0,
+                        64,
+                        64);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -257,8 +276,14 @@ public class GamePanel extends JPanel implements KeyListener {
     double gravity = 0.5;
 
     // Goal Flag
-    int goalX = 2200;
-    int goalY = 300;
+    int goalX = 2700;
+    int goalY = 326;
+
+    BufferedImage flagSheet;
+    BufferedImage[] flagFrames;
+
+    int flagFrame = 0;
+    int flagAnimationCounter = 0;
 
     boolean gameWon = false;
 
@@ -329,7 +354,14 @@ public class GamePanel extends JPanel implements KeyListener {
         }
 
         if (gameWon) {
-            g.drawString("YOU WIN!", 350, 100);
+
+            Font oldFont = g.getFont();
+
+            g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 40));
+
+            g.drawString("YOU WIN!", 250, 100);
+
+            g.setFont(oldFont);
         }
 
         if (idleFrames != null) {
@@ -392,7 +424,14 @@ public class GamePanel extends JPanel implements KeyListener {
 
         g.drawString("Score: " + score, 20, 20); // Scoreboard
 
-        g.drawRect(goalX - cameraX, goalY, 30, 80); // Goal Flag
+        // Goal Flag
+        g.drawImage(
+                flagFrames[flagFrame],
+                goalX - cameraX,
+                goalY,
+                64,
+                64,
+                null);
 
         // Platform Painting
         for (Platform platform : platforms) {
@@ -612,9 +651,9 @@ public class GamePanel extends JPanel implements KeyListener {
         }
 
         // Win Condition
-        if (playerX < goalX + 30 &&
+        if (playerX < goalX + 64 &&
                 playerX + 50 > goalX &&
-                playerY < goalY + 80 &&
+                playerY < goalY + 64 &&
                 playerY + 50 > goalY) {
             gameWon = true;
             resetButton.setVisible(true);
@@ -670,6 +709,20 @@ public class GamePanel extends JPanel implements KeyListener {
             }
 
             appleAnimationCounter = 0;
+        }
+
+        // Flag Animation
+        flagAnimationCounter++;
+
+        if (flagAnimationCounter > 10) {
+
+            flagFrame++;
+
+            if (flagFrame >= flagFrames.length) {
+                flagFrame = 0;
+            }
+
+            flagAnimationCounter = 0;
         }
 
         cameraX = Math.max(0, playerX - 400);
