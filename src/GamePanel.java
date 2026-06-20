@@ -41,7 +41,6 @@ public class GamePanel extends JPanel implements KeyListener {
 
         // Enemies
         enemies.add(new Enemy(300, 310, 250, 450));
-        // enemies.add(new Enemy(300, 310, 250, 450));
         enemies.add(new Enemy(900, 310, 850, 1100));
         enemies.add(new Enemy(1500, 260, 1450, 1650));
 
@@ -49,8 +48,8 @@ public class GamePanel extends JPanel implements KeyListener {
         coins.add(new Coin(300, 300));
         coins.add(new Coin(600, 200));
         coins.add(new Coin(1000, 200));
-        coins.add(new Coin(1400, 250));
-        coins.add(new Coin(1800, 200));
+        coins.add(new Coin(1300, 200));
+        coins.add(new Coin(2250, 200));
 
         // Restart Button
         resetButton = new JButton("Play Again");
