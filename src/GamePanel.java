@@ -197,8 +197,16 @@ public class GamePanel extends JPanel implements KeyListener {
                         32);
             }
 
-            System.out.println(
-                    "Apple Frames: " + appleFrames.length);
+            // Spike Sprite Loader
+            spikeSheet = ImageIO.read(
+                    new File(
+                            "assets/Traps/Spikes/Idle.png"));
+
+            spikeImage = spikeSheet.getSubimage(
+                    0,
+                    0,
+                    16,
+                    16);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -237,7 +245,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
     int playerX = 100;
     int playerY = 100;
-    int groundY = 500;
+    int groundY = 530;
 
     // Score Counter
     int score = 0;
@@ -291,6 +299,10 @@ public class GamePanel extends JPanel implements KeyListener {
 
     int appleFrame = 0;
     int appleAnimationCounter = 0;
+
+    // Spike Sprite
+    BufferedImage spikeSheet;
+    BufferedImage spikeImage;
 
     boolean onGround = false;
     boolean leftPressed;
@@ -366,7 +378,17 @@ public class GamePanel extends JPanel implements KeyListener {
             }
         }
 
-        g.fillRect(0, groundY, 800, 100);
+        // Ground Spike
+        for (int x = 0; x < 3000; x += 32) {
+
+            g.drawImage(
+                    spikeImage,
+                    x - cameraX,
+                    groundY,
+                    32,
+                    32,
+                    null);
+        }
 
         g.drawString("Score: " + score, 20, 20); // Scoreboard
 
@@ -516,13 +538,10 @@ public class GamePanel extends JPanel implements KeyListener {
 
         playerY += (int) velocityY;
 
+        // Spike Death
         if (playerY + 50 >= groundY) {
 
-            playerY = groundY - 50;
-
-            velocityY = 0;
-
-            onGround = true;
+            respawn();
         }
 
         for (Platform platform : platforms) {
@@ -653,7 +672,7 @@ public class GamePanel extends JPanel implements KeyListener {
             appleAnimationCounter = 0;
         }
 
-        cameraX = playerX - 400;
+        cameraX = Math.max(0, playerX - 400);
     }
 
     public void resetGame() {
