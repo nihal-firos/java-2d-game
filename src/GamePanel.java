@@ -26,30 +26,8 @@ public class GamePanel extends JPanel implements KeyListener {
 
         setLayout(null);
 
-        // Platforms
-        final int TILE = 46;
-
-        platforms.add(new Platform(250, 350, TILE * 4, 20));
-        platforms.add(new Platform(500, 250, TILE * 3, 20));
-        platforms.add(new Platform(100, 180, TILE * 3, 20));
-        platforms.add(new Platform(900, 350, TILE * 4, 20));
-        platforms.add(new Platform(1200, 250, TILE * 4, 20));
-        platforms.add(new Platform(1500, 300, TILE * 4, 20));
-        platforms.add(new Platform(1900, 200, TILE * 4, 20));
-        platforms.add(new Platform(2200, 450, TILE * 4, 20));
-        platforms.add(new Platform(2500, 390, TILE * 4, 20));
-
-        // Enemies
-        enemies.add(new Enemy(300, 310, 250, 450));
-        enemies.add(new Enemy(900, 310, 850, 1100));
-        enemies.add(new Enemy(1500, 260, 1450, 1650));
-
-        // Coins
-        coins.add(new Coin(300, 300));
-        coins.add(new Coin(600, 200));
-        coins.add(new Coin(1000, 200));
-        coins.add(new Coin(1300, 200));
-        coins.add(new Coin(2250, 200));
+        // Level Loader
+        loadLevel(1);
 
         // Restart Button
         resetButton = new JButton("Play Again");
@@ -239,6 +217,50 @@ public class GamePanel extends JPanel implements KeyListener {
         });
 
         timer.start();
+        
+    }
+
+    public void loadLevel(int level) {
+
+        platforms.clear();
+        enemies.clear();
+        coins.clear();
+
+        final int TILE = 46;
+
+        switch (level) {
+
+            case 1:
+
+                platforms.add(new Platform(250, 350, TILE * 4, 20));
+                platforms.add(new Platform(500, 250, TILE * 3, 20));
+                platforms.add(new Platform(100, 180, TILE * 3, 20));
+
+                enemies.add(new Enemy(300, 310, 250, 450));
+
+                coins.add(new Coin(300, 300));
+                coins.add(new Coin(600, 200));
+
+                goalX = 900;
+                goalY = 180;
+
+                break;
+
+            case 2:
+
+                platforms.add(new Platform(250, 350, TILE * 3, 20));
+                platforms.add(new Platform(450, 250, TILE * 2, 20));
+                platforms.add(new Platform(650, 180, TILE * 2, 20));
+                platforms.add(new Platform(900, 250, TILE * 3, 20));
+
+                enemies.add(new Enemy(500, 210, 450, 550));
+                enemies.add(new Enemy(950, 210, 900, 1050));
+
+                goalX = 1200;
+                goalY = 180;
+
+                break;
+        }
     }
 
     // Respawn Mechanism
@@ -260,6 +282,10 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
+    // Levels
+    int currentLevel = 1;
+    boolean resetLevel = false;
+    boolean loadNextLevel = false;
 
     int playerX = 100;
     int playerY = 100;
@@ -408,6 +434,12 @@ public class GamePanel extends JPanel implements KeyListener {
                         null);
             }
         }
+
+        // Level Indicator
+        g.drawString(
+                "Level: " + currentLevel,
+                20,
+                60);
 
         // Ground Spike
         for (int x = 0; x < 3000; x += 32) {
@@ -579,7 +611,7 @@ public class GamePanel extends JPanel implements KeyListener {
         // Spike Death
         if (playerY + 50 >= groundY) {
 
-            respawn();
+            resetLevel = true;
         }
 
         for (Platform platform : platforms) {
@@ -628,7 +660,7 @@ public class GamePanel extends JPanel implements KeyListener {
                     score++;
 
                 } else {
-                    respawn();
+                    resetLevel = true;
                 }
             }
         }
@@ -654,8 +686,8 @@ public class GamePanel extends JPanel implements KeyListener {
                 playerX + 50 > goalX &&
                 playerY < goalY + 64 &&
                 playerY + 50 > goalY) {
-            gameWon = true;
-            resetButton.setVisible(true);
+
+            loadNextLevel = true;
         }
 
         repaint();
@@ -724,10 +756,45 @@ public class GamePanel extends JPanel implements KeyListener {
             flagAnimationCounter = 0;
         }
 
+        if (loadNextLevel) {
+
+            loadNextLevel = false;
+
+            currentLevel++;
+
+            if (currentLevel <= 5) {
+
+                loadLevel(currentLevel);
+
+                playerX = 100;
+                playerY = 100;
+
+                velocityY = 0;
+
+                cameraX = 0;
+
+            } else {
+
+                gameWon = true;
+                resetButton.setVisible(true);
+            }
+        }
+
+        if (resetLevel) {
+
+            resetLevel = false;
+
+            resetCurrentLevel();
+        }
+
         cameraX = Math.max(0, playerX - 400);
     }
 
     public void resetGame() {
+        
+        currentLevel = 1;
+
+        loadLevel(1);
 
         playerX = 100;
         playerY = 100;
@@ -751,4 +818,17 @@ public class GamePanel extends JPanel implements KeyListener {
         resetButton.setVisible(false);
     }
 
+    public void resetCurrentLevel() {
+
+        loadLevel(currentLevel);
+
+        playerX = 100;
+        playerY = 100;
+
+        velocityY = 0;
+
+        cameraX = 0;
+
+        score = 0;
+    }
 }
