@@ -220,6 +220,7 @@ public class GamePanel extends JPanel implements KeyListener {
         
     }
 
+    // Level Loading
     public void loadLevel(int level) {
 
         platforms.clear();
@@ -232,32 +233,112 @@ public class GamePanel extends JPanel implements KeyListener {
 
             case 1:
 
-                platforms.add(new Platform(250, 350, TILE * 4, 20));
-                platforms.add(new Platform(500, 250, TILE * 3, 20));
-                platforms.add(new Platform(100, 180, TILE * 3, 20));
+                platforms.add(new Platform(100, 420, TILE * 5, 20));
+                platforms.add(new Platform(450, 340, TILE * 4, 20));
+                platforms.add(new Platform(800, 260, TILE * 4, 20));
+                platforms.add(new Platform(1200, 180, TILE * 4, 20));
 
-                enemies.add(new Enemy(300, 310, 250, 450));
+                enemies.add(new Enemy(500, 300, 450, 620));
 
-                coins.add(new Coin(300, 300));
-                coins.add(new Coin(600, 200));
+                coins.add(new Coin(250, 370));
+                coins.add(new Coin(600, 290));
+                coins.add(new Coin(950, 210));
 
-                goalX = 900;
-                goalY = 180;
+                goalX = 1400;
+                goalY = 110;
 
                 break;
 
             case 2:
 
-                platforms.add(new Platform(250, 350, TILE * 3, 20));
-                platforms.add(new Platform(450, 250, TILE * 2, 20));
-                platforms.add(new Platform(650, 180, TILE * 2, 20));
-                platforms.add(new Platform(900, 250, TILE * 3, 20));
+                platforms.add(new Platform(100, 420, TILE * 4, 20));
+                platforms.add(new Platform(450, 330, TILE * 3, 20));
+                platforms.add(new Platform(700, 250, TILE * 3, 20));
+                platforms.add(new Platform(1000, 350, TILE * 3, 20));
+                platforms.add(new Platform(1350, 250, TILE * 4, 20));
 
-                enemies.add(new Enemy(500, 210, 450, 550));
-                enemies.add(new Enemy(950, 210, 900, 1050));
+                enemies.add(new Enemy(500, 290, 450, 580));
+                enemies.add(new Enemy(1400, 210, 1350, 1550));
 
-                goalX = 1200;
+                coins.add(new Coin(520, 280));
+                coins.add(new Coin(760, 200));
+                coins.add(new Coin(1450, 200));
+
+                goalX = 1700;
                 goalY = 180;
+
+                break;
+
+            case 3:
+                platforms.add(new Platform(100, 420, TILE * 4, 20));
+                platforms.add(new Platform(450, 340, TILE * 3, 20));
+                platforms.add(new Platform(800, 280, TILE * 3, 20));
+                platforms.add(new Platform(1150, 220, TILE * 3, 20));
+                platforms.add(new Platform(1500, 320, TILE * 4, 20));
+                platforms.add(new Platform(1900, 220, TILE * 4, 20));
+
+                enemies.add(new Enemy(500, 300, 450, 580));
+                enemies.add(new Enemy(850, 240, 800, 930));
+                enemies.add(new Enemy(1550, 280, 1500, 1680));
+
+                coins.add(new Coin(520, 290));
+                coins.add(new Coin(860, 230));
+                coins.add(new Coin(1200, 170));
+                coins.add(new Coin(1950, 170));
+
+                goalX = 2200;
+                goalY = 150;
+
+                break;
+
+            case 4:
+                platforms.add(new Platform(100, 420, TILE * 4, 20));
+                platforms.add(new Platform(450, 340, TILE * 3, 20));
+                platforms.add(new Platform(800, 280, TILE * 3, 20));
+                platforms.add(new Platform(1150, 220, TILE * 3, 20));
+                platforms.add(new Platform(1500, 320, TILE * 4, 20));
+                platforms.add(new Platform(1900, 220, TILE * 4, 20));
+
+                enemies.add(new Enemy(500, 300, 450, 580));
+                enemies.add(new Enemy(850, 240, 800, 930));
+                enemies.add(new Enemy(1550, 280, 1500, 1680));
+
+                coins.add(new Coin(520, 290));
+                coins.add(new Coin(860, 230));
+                coins.add(new Coin(1200, 170));
+                coins.add(new Coin(1950, 170));
+
+                goalX = 2200;
+                goalY = 150;
+
+                break;
+
+            case 5:
+                platforms.add(new Platform(100, 420, TILE * 4, 20));
+                platforms.add(new Platform(450, 330, TILE * 2, 20));
+                platforms.add(new Platform(700, 240, TILE * 2, 20));
+                platforms.add(new Platform(950, 340, TILE * 2, 20));
+                platforms.add(new Platform(1200, 250, TILE * 2, 20));
+                platforms.add(new Platform(1450, 180, TILE * 2, 20));
+                platforms.add(new Platform(1750, 300, TILE * 3, 20));
+                platforms.add(new Platform(2100, 220, TILE * 3, 20));
+                platforms.add(new Platform(2500, 140, TILE * 4, 20));
+
+                enemies.add(new Enemy(480, 290, 450, 530));
+                enemies.add(new Enemy(980, 300, 950, 1030));
+                enemies.add(new Enemy(1760, 260, 1750, 1880));
+                enemies.add(new Enemy(2150, 180, 2100, 2230));
+                enemies.add(new Enemy(2550, 100, 2500, 2680));
+
+                coins.add(new Coin(500, 280));
+                coins.add(new Coin(740, 190));
+                coins.add(new Coin(1230, 200));
+                coins.add(new Coin(1790, 250));
+                coins.add(new Coin(2160, 170));
+                coins.add(new Coin(2580, 90));
+
+                goalX = 2850;
+                goalY = 70;
 
                 break;
         }
