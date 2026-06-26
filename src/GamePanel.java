@@ -363,6 +363,14 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
+    // Game State
+    final int MENU = 0;
+    final int PLAYING = 1;
+    final int GAME_OVER = 2;
+    final int GAME_WON = 3;
+
+    int gameState = MENU;
+
     // Levels
     int currentLevel = 1;
     boolean resetLevel = false;
@@ -444,6 +452,24 @@ public class GamePanel extends JPanel implements KeyListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        if (gameState == MENU) {
+
+            drawMenu(g);
+            return;
+        }
+
+        if (gameState == GAME_OVER) {
+
+            drawGameOver(g);
+            return;
+        }
+
+        if (gameState == GAME_WON) {
+
+            drawWinScreen(g);
+            return;
+        }
 
         for (int x = 0; x < getWidth(); x += 64) {
 
@@ -638,6 +664,33 @@ public class GamePanel extends JPanel implements KeyListener {
             onGround = false;
         }
 
+        if (gameState == MENU) {
+
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+
+                gameState = PLAYING;
+            }
+
+            return;
+        }
+
+        if (gameState == GAME_OVER) {
+
+            if (key == KeyEvent.VK_R) {
+
+                resetCurrentLevel();
+                gameState = PLAYING;
+            }
+
+            if (key == KeyEvent.VK_M) {
+
+                resetGame();
+                gameState = MENU;
+            }
+
+            return;
+        }
+
         repaint();
     }
 
@@ -669,6 +722,12 @@ public class GamePanel extends JPanel implements KeyListener {
     }
 
     public void updateGame() {
+        
+        if (gameState != PLAYING) {
+
+            repaint();
+            return;
+        }
 
         if (gameWon) {
             repaint();
@@ -843,6 +902,10 @@ public class GamePanel extends JPanel implements KeyListener {
 
             currentLevel++;
 
+            if (currentLevel > 5) {
+                gameState = GAME_WON;
+            }
+
             if (currentLevel <= 5) {
 
                 loadLevel(currentLevel);
@@ -856,8 +919,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
             } else {
 
-                gameWon = true;
-                resetButton.setVisible(true);
+                gameState = GAME_WON;
             }
         }
 
@@ -865,7 +927,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
             resetLevel = false;
 
-            resetCurrentLevel();
+            gameState = GAME_OVER;
         }
 
         cameraX = Math.max(0, playerX - 400);
@@ -912,4 +974,35 @@ public class GamePanel extends JPanel implements KeyListener {
 
         score = 0;
     }
+
+    private void drawMenu(Graphics g) {
+
+        g.setFont(new Font("Arial", Font.BOLD, 40));
+        g.drawString("PIXEL ADVENTURE", 180, 150);
+
+        g.setFont(new Font("Arial", Font.PLAIN, 20));
+        g.drawString("Press ENTER to Start", 250, 250);
+        g.drawString("ESC to Exit", 290, 290);
+    }
+
+    private void drawGameOver(Graphics g) {
+
+        g.setFont(new Font("Arial", Font.BOLD, 40));
+        g.drawString("GAME OVER", 240, 180);
+
+        g.setFont(new Font("Arial", Font.PLAIN, 20));
+        g.drawString("Press R to Retry", 270, 250);
+        g.drawString("Press M for Menu", 265, 290);
+    }
+
+    private void drawWinScreen(Graphics g) {
+
+        g.setFont(new Font("Arial", Font.BOLD, 40));
+        g.drawString("YOU WIN!", 260, 170);
+
+        g.setFont(new Font("Arial", Font.PLAIN, 20));
+        g.drawString("Congratulations!", 255, 230);
+        g.drawString("Press M for Menu", 255, 270);
+    }
 }
+
